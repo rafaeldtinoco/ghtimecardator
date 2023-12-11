@@ -250,8 +250,8 @@ func main() {
 
 		ghEvents, resp, err := myEvents(ctx, githubUser, false, opt)
 		if err != nil {
-			fmt.Println(err)
-			return
+			fmt.Printf("Error fetching events: %v\n", err)
+			os.Exit(1)
 		}
 		for _, event := range ghEvents {
 			eventTime := event.GetCreatedAt()
@@ -309,6 +309,7 @@ func handleEvent(w *work, e *github.Event) {
 	pay, err := e.ParsePayload()
 	if err != nil {
 		fmt.Println("Error parsing payload:", err)
+		os.Exit(1)
 	}
 
 	switch v := pay.(type) {
@@ -410,7 +411,7 @@ func descriptionSummary(text string) string {
 
 // executeAI is a helper function that calls the openai api.
 func executeAI(role, instr string) string {
-	answer, _ := llm.Call(
+	answer, err := llm.Call(
 		context.Background(),
 		[]schema.ChatMessage{
 			schema.SystemChatMessage{Content: role},
@@ -419,6 +420,10 @@ func executeAI(role, instr string) string {
 		llms.WithTemperature(0.2),
 		llms.WithMaxLength(180),
 	)
+	if err != nil {
+		fmt.Printf("Error calling OpenAI: %v\n", err)
+		os.Exit(1)
+	}
 	if answer == nil {
 		return ""
 	}
