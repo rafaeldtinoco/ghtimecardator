@@ -47,8 +47,7 @@ needs.
 - Generate an executive summary for today's activities in the `username/repository` repo:
 
   ```console
-  $ make
-  $ ./ghtimecardator yesterday technical rafaeldtinoco/ghtimecardator
+  $ go install github.com/rafaeldtinoco/ghtimecardator@latest
   ```
 
   ```markdown
